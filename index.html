@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <title>Mapa con Leaflet</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <style>
+        #mapa { height: 500px; width: 100%; }
+    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tela Pura - Pura Facha</title>
+    <style>
+        /* Estilos generales */
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            scroll-behavior: smooth;
+        }
+
+        /* Header */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background-color: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo img {
+            width: 50px;
+            height: 50px;
+            margin-right: 10px;
+        }
+
+        .logo h1 {
+            font-size: 1.5rem;
+            margin: 0;
+        }
+
+        nav ul {
+            list-style-type: none;
+            display: flex;
+            gap: 20px;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            color: #333;
+            transition: color 0.3s;
+        }
+
+        nav ul li a:hover {
+            color: #0066cc;
+        }
+
+        /* Hero Section */
+        .hero {
+            height: 100vh;
+            background-image: url('https://images.unsplash.com/photo-1504204267155-aaad8e81290d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1920&q=80');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            color: white;
+            text-align: center;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero h1 {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        .hero p {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 0.8rem 1.5rem;
+            background-color: white;
+            color: #333;
+            text-decoration: none;
+            border-radius: 30px;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+
+        .btn:hover {
+            background-color: #f0f0f0;
+        }
+
+        /* Secciones */
+        section {
+            padding: 4rem 0;
+        }
+
+        section h2 {
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        /* Video Section */
+        #video {
+            background-color: #f8f8f8;
+        }
+
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+            height: 0;
+            overflow: hidden;
+            max-width: 100%;
+        }
+
+        .video-container video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Historia Section */
+        .historia-content {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .historia-image {
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .historia-image img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .historia-text {
+            flex: 1;
+            min-width: 300px;
+        }
+
+        /* Productos Section */
+        #productos {
+            background-color: #f8f8f8;
+        }
+
+        .productos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .producto {
+            background-color: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+
+        .producto:hover {
+            transform: translateY(-5px);
+        }
+
+        .producto img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .producto-info {
+            padding: 1rem;
+        }
+
+        .producto-info h3 {
+            margin-top: 0;
+        }
+
+        /* Localidad Section */
+        #localidad {
+            background-color: #f0f0f0;
+        }
+
+        .mapa-container {
+            height: 400px;
+            margin-bottom: 2rem;
+        }
+
+        /* Footer */
+        footer {
+            background-color: #333;
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 3rem;
+            }
+
+            .hero p {
+                font-size: 1.2rem;
+            }
+
+            nav ul {
+                display: none;
+            }
+
+            .historia-content {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="container">
+            <div class="logo">
+                <img src="p.png" alt="Logo de Tela Pura">
+                <h1>Tela Pura</h1>
+            </div>
+            <ul>
+                <li><a href="#historia">Historia</a></li>
+                <li><a href="#productos">Productos</a></li>
+                <li><a href="#localidad">Localidad</a></li>
+                <li><a href="#contacto">Contacto</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="hero-content">
+                <h1>Tela Pura</h1>
+                <p>Pura Facha</p>
+                <a href="#video" class="btn">Ver Video</a>
+            </div>
+        </section>
+
+        <section id="video">
+            <div class="container">
+                <h2>Nuestra Esencia</h2>
+                <div class="video-container">
+                    <video src="0923(1).mp4" controls>
+                </div>
+            </div>
+        </section>
+
+        <section id="historia">
+            <div class="container">
+                <h2>Nuestra Historia</h2>
+                <div class="historia-content">
+                    <div class="historia-image">
+                        <img src="Historia.png" alt="Fundadores de Tela Pura">
+                    </div>
+                    <div class="historia-text">
+                        <p>Tela Pura nació en 2010 en Los Juríes, Santiago del Estero, con la visión de crear ropa de alta calidad utilizando algodón local. Nuestros fundadores, Juan y María Pérez, combinaron su pasión por la moda y su amor por su tierra natal para dar vida a esta marca única.</p>
+                        <p>El nombre "Tela Pura" refleja nuestro compromiso con la autenticidad y la calidad, mientras que nuestro slogan "Pura Facha" captura la esencia de nuestro estilo: moderno, confiado y arraigado en nuestras raíces.</p>
+                        <p>Desde nuestros humildes comienzos, hemos crecido hasta convertirnos en un referente de la moda sustentable en Argentina, sin perder nunca de vista nuestra misión de apoyar a nuestra comunidad local.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="productos">
+            <div class="container">
+                <h2>Nuestros Productos</h2>
+                <div class="productos-grid">
+                    <div class="producto">
+                        <img src="remera.png" alt="Camiseta de algodón">
+                        <div class="producto-info">
+                            <h3>Camiseta de Algodón</h3>
+                            <p>100% algodón orgánico de Los Juríes</p>
+                        </div>
+                    </div>
+                    <div class="producto">
+                        <img src="pantalon.png" alt="Pantalón de algodón">
+                        <div class="producto-info">
+                            <h3>Pantalón de Algodón</h3>
+                            <p>Cómodo y duradero, perfecto para el día a día</p>
+                        </div>
+                    </div>
+                    <div class="producto">
+                        <img src="vestido.png" alt="Vestido de algodón">
+                        <div class="producto-info">
+                            <h3>Vestido de Algodón</h3>
+                            <p>Elegante y fresco para todas las ocasiones</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="localidad">
+            <div class="container">
+                <h2>Nuestra Localidad</h2>
+                <div class="mapa-container" id="mapa"></div>
+                <p>Los Juríes es una ciudad ubicada en el departamento General Taboada, provincia de Santiago del Estero, Argentina. Sus coordenadas son 28°27′00″S 62°06′00″O. La economía local se basa principalmente en la agricultura, siendo el algodón uno de sus cultivos más importantes.</p>
+                <p>El clima de la región es subtropical con estación seca, caracterizado por veranos cálidos e inviernos suaves. Esta combinación de factores climáticos y geográficos hace de Los Juríes un lugar ideal para el cultivo de algodón de alta calidad, que es la materia prima principal de nuestros productos en Tela Pura.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2023 Tela Pura. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Animación suave del scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Efecto parallax en el hero
+        window.addEventListener('scroll', function() {
+            const scrollPosition = window.pageYOffset;
+            document.querySelector('.hero').style.backgroundPositionY = scrollPosition * 0.7 + 'px';
+        });
+
+        // Mapa de Google (reemplazar YOUR_API_KEY con una clave de API válida)
+        const map = L.map('mapa').setView([-28.45, -62.1], 12);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+        L.marker([-28.45, -62.1]).addTo(map)
+            .bindPopup('Los Juríes, Santiago del Estero')
+            .openPopup();
+    </script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap"></script>
+</body>
+</html>
